@@ -15,7 +15,7 @@
 
 2. Добавьте его в проект под нужным
 
-Например так добавляется модуль `https://github.com/dapi/elements/blob/master/spinner/index.js` в файл `./app/javascripts/spinner.js`
+Например так добавляется модуль `https://github.com/dapi/elements/blob/master/spinner.js` в файл `./app/javascripts/spinner.js`
 
 > goga pull https://github.com/dapi/elements/blob/master/spinner.js ./app/javascripts/spinner.js
 
