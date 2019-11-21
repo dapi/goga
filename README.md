@@ -17,7 +17,11 @@
 
 Например так добавляется модуль `https://github.com/dapi/elements/blob/master/spinner/index.js` в файл `./app/javascripts/spinner.js`
 
-> goga https://github.com/dapi/elements/blob/master/spinner/index.js ./app/javascripts/spinner.js
+> goga pull https://github.com/dapi/elements/blob/master/spinner.js ./app/javascripts/spinner.js
+
+или можно упустить `pull`
+
+> goga https://github.com/dapi/elements/blob/master/spinner.js ./app/javascripts/
 
 `goga` скопирует файл как есть и добавит первой строкой специальный комментарий с адресом источника, например:
 
