@@ -17,9 +17,9 @@
 
 Например так добавляется модуль `https://github.com/dapi/elements/blob/master/spinner.js` в файл `./app/javascripts/spinner.js`
 
-> goga pull https://github.com/dapi/elements/blob/master/spinner.js ./app/javascripts/spinner.js
+> goga add https://github.com/dapi/elements/blob/master/spinner.js ./app/javascripts/spinner.js
 
-или можно упустить `pull`
+можно упустить `add` и имя конечного файла:
 
 > goga https://github.com/dapi/elements/blob/master/spinner.js ./app/javascripts/
 
