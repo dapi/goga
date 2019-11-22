@@ -44,3 +44,11 @@
 ## Как устроены goga-модули
 
 `goga`-модуль это обычный исходник на любом языке программирования, в который, при установке, первой строкой добавляется адрес источника вида: `// goga https://...`
+
+Например:
+
+```javascript
+// goga https://github.com/dapi/elements/blob/master/spinner.js
+
+customElements.define('dapi-spinner', class extends HTMLElement {} )
+```
