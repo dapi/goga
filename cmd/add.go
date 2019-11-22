@@ -17,36 +17,57 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"io"
+	"net/http"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
 
+// DownloadFile will download a url to a local file. It's efficient because it will
+// write as it downloads and not load the whole file into memory.
+func DownloadFile(filepath string, url string) error {
+
+    // Get the data
+    resp, err := http.Get(url)
+    if err != nil {
+        return err
+    }
+    defer resp.Body.Close()
+
+    // Create the file
+    out, err := os.Create(filepath)
+    if err != nil {
+        return err
+    }
+    defer out.Close()
+
+    // Write the body to file
+    _, err = io.Copy(out, resp.Body)
+    return err
+}
+
 // addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:   "add [Source URL] [Destination PATH]",
-	Short: "Fetch goga-module and add it to the project",
-	Long: `Fetch goga-module from Source URL and put it as file into Destination PATH. 
-Use current directory if Destination PATH is not specified`,
-  Args: cobra.RangeArgs(1,2),
+	Use:   "add [Source URL]", // [Destination PATH]",
+	Short: "Fetch goga-module and add it to the project.",
+	Long: `Fetch goga-module from Source URL and put it as file into current directory.`,
+  Args: cobra.RangeArgs(1,1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
+		url := args[0]
+		filename := filepath.Base(url)
+		fmt.Println("Fetch " + url + " into ./" + filename)
+
+    if err := DownloadFile(filename, url); err != nil {
+        panic(err)
+    }
+
+    // https://github.com/dapi/elements/blob/master/spinner.js
+    // https://raw.githubusercontent.com/dapi/elements/master/spinner.js
 	},
 }
 
-var Region string
-
 func init() {
 	rootCmd.AddCommand(addCmd)
-
-  // addCmd.Flags().StringVarP(&Region, "region", "r", "", "AWS region (required)")
-  // addCmd.MarkFlagRequired("region")
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-  // addCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
