@@ -17,11 +17,11 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"io"
 	"net/http"
+	"os"
 	"path/filepath"
-  "regexp"
+	"regexp"
 
 	"github.com/spf13/cobra"
 )
@@ -30,45 +30,45 @@ import (
 // write as it downloads and not load the whole file into memory.
 func DownloadFile(filepath string, url string) error {
 
-    // Get the data
-    resp, err := http.Get(url)
-    if err != nil {
-        return err
-    }
-    defer resp.Body.Close()
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
 
-    // Create the file
-    out, err := os.Create(filepath)
-    if err != nil {
-        return err
-    }
-    defer out.Close()
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
 
-    // Write the body to file
-    _, err = io.Copy(out, resp.Body)
-    return err
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	return err
 }
 
 func replaceGithubDirectLink(url string) string {
 	var re = regexp.MustCompile(`^(https://github.com/)([^/]+/[^/]+/)blob/(.+)$`)
-  s := re.ReplaceAllString(url, `https://raw.githubusercontent.com/$2$3`)
-  return s
+	s := re.ReplaceAllString(url, `https://raw.githubusercontent.com/$2$3`)
+	return s
 }
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add [Source URL]", // [Destination PATH]",
 	Short: "Fetch goga-module and add it to the project.",
-	Long: `Fetch goga-module from Source URL and put it as file into current directory.`,
-  Args: cobra.RangeArgs(1,1),
+	Long:  `Fetch goga-module from Source URL and put it as file into current directory.`,
+	Args:  cobra.RangeArgs(1, 1),
 	Run: func(cmd *cobra.Command, args []string) {
-		url := replaceGithubDirectLink( args[0] )
+		url := replaceGithubDirectLink(args[0])
 		filename := filepath.Base(url)
 		fmt.Println("Fetch " + url + " into ./" + filename)
 
-    if err := DownloadFile(filename, url); err != nil {
-        panic(err)
-    }
+		if err := DownloadFile(filename, url); err != nil {
+			panic(err)
+		}
 	},
 }
 

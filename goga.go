@@ -18,5 +18,5 @@ package main
 import "github.com/dapi/goga/cmd"
 
 func main() {
-  cmd.Execute()
+	cmd.Execute()
 }
