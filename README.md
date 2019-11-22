@@ -1,4 +1,4 @@
-![goga logo](https://image.flaticon.com/icons/svg/1005/1005633.svg)
+![goga logo](https://raw.githubusercontent.com/dapi/goga/master/assets/goga.png)
 
 # goga
 
