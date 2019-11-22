@@ -1,3 +1,5 @@
+![goga logo](https://image.flaticon.com/icons/svg/1005/1005633.svg)
+
 # goga
 
 Языконезависимый менеджер однофайловых пакетов (версионированный `copy-paste`)
