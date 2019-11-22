@@ -1,5 +1,5 @@
 /*
-Copyright © 2019 NAME HERE <EMAIL ADDRESS>
+Copyright © 2019 Danil Pismenny <danil@brandymint.ru>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,27 +23,28 @@ import (
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:   "add",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:   "add [Source URL] [Destination PATH]",
+	Short: "Fetch goga-module and add it to the project",
+	Long: `Fetch goga-module from Source URL and put it as file into Destination PATH. 
+Use current directory if Destination PATH is not specified`,
+  Args: cobra.RangeArgs(1,2),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("add called")
 	},
 }
 
+var Region string
+
 func init() {
 	rootCmd.AddCommand(addCmd)
 
+  // addCmd.Flags().StringVarP(&Region, "region", "r", "", "AWS region (required)")
+  // addCmd.MarkFlagRequired("region")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
+  // addCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

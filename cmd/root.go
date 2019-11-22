@@ -1,5 +1,5 @@
 /*
-Copyright © 2019 NAME HERE <EMAIL ADDRESS>
+Copyright © 2019 Danil Pismenny <danil@brandymint.ru>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -32,13 +32,17 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
   Use:   "goga",
-  Short: "A brief description of your application",
-  Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+  Short: "Goga is a Single file Package Manager.",
+  Long: `Add single file as module into the project and publicate its modification with one command.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+For example, fetch and add the file:
+
+> goga add https://github.com/dapi/elements/blob/master/spinner.js ./app/javascripts/
+
+Push modified file back:
+
+> goga push ./app/javascripts/spinner.js
+`,
   // Uncomment the following line if your bare application
   // has an action associated with it:
   //	Run: func(cmd *cobra.Command, args []string) { },
@@ -60,12 +64,12 @@ func init() {
   // Cobra supports persistent flags, which, if defined here,
   // will be global for your application.
 
-  rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.goga.yaml)")
+  // rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.goga.yaml)")
 
 
   // Cobra also supports local flags, which will only run
   // when this action is called directly.
-  rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+  //rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 
