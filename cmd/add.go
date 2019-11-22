@@ -77,17 +77,35 @@ func replaceGithubDirectLink(url string) string {
 	return s
 }
 
+func DirectoryExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
+}
+
 // addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:   "add [Source URL]", // [Destination PATH]",
-	Short: "Fetch goga-module and add it to the project.",
-	Long:  `Fetch goga-module from Source URL and put it as file into current directory.`,
-	Args:  cobra.RangeArgs(1, 1),
+	Use:   "add <URL> [destination]", // [Destination PATH]",
+	Short: "Fetch goga-module and put it into the project.",
+	Long:  `Fetch goga-module from source URL and put it as file into destination directory. It puts file as is into current directory if destination is not specified.`,
+	Args:  cobra.RangeArgs(1, 2),
 	Run: func(cmd *cobra.Command, args []string) {
 		original_url := args[0]
 		url := replaceGithubDirectLink(original_url)
 		filename := filepath.Base(url)
-		fmt.Println("Fetch " + url + " into ./" + filename)
+		directory := filepath.Clean(args[1])
+
+		if _, err := DirectoryExists(directory); err != nil {
+			filename = directory + "/" + filename
+		} else {
+			filename = directory
+		}
+		fmt.Println("Fetch " + url + " into " + filename)
 
 		if err := DownloadFile(filename, url, original_url); err != nil {
 			panic(err)
