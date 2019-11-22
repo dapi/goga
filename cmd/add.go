@@ -77,15 +77,9 @@ func replaceGithubDirectLink(url string) string {
 	return s
 }
 
-func DirectoryExists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
+func DirectoryExists(path string) bool {
+	stat, err := os.Stat(path)
+	return err == nil && stat.IsDir()
 }
 
 // addCmd represents the add command
@@ -100,7 +94,7 @@ var addCmd = &cobra.Command{
 		filename := filepath.Base(url)
 		directory := filepath.Clean(args[1])
 
-		if _, err := DirectoryExists(directory); err != nil {
+		if DirectoryExists(directory) {
 			filename = directory + "/" + filename
 		} else {
 			filename = directory
