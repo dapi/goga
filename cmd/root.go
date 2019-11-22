@@ -30,9 +30,10 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "goga",
 	Short: "Single file Package Manager for every program languages.",
-	Long: `Add single file as module into the project and publicate its modification with one command.
-
-For example, fetch and add the file:
+	Long: `Single file Package Manager for every program languages.
+	
+Add single file as module into the project and publicate its
+modification with one command. For example, fetch and add file:
 
 > goga add https://github.com/dapi/elements/blob/master/spinner.js ./app/javascripts/
 

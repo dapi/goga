@@ -26,29 +26,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Formats = map[string]string{
-	".c":     "// %s %s",
-	".js":    "// %s %s",
-	".go":    "// %s %s",
-	".java":  "// %s %s",
-	".php":   "// %s %s",
-	".slim":  "// %s %s",
-	".haml":  "// %s %s",
-	".rb":    "# %s %s",
-	".py":    "# %s %s",
-	".pl":    "# %s %s",
-	".sql":   "-- %s %s",
-	".swift": "-- %s %s",
-	".xml":   "<!-- %s %s -->",
-	".html":  "<!-- %s %s -->",
-}
-
 func GenerateMagicComment(url string, ext string) string {
 	format := Formats[ext]
 	if len(format) == 0 {
 		panic(fmt.Sprintf("I don't known how to add comments for this extension - '%s'", ext))
 	}
-	return fmt.Sprintf(format, "goga", url)
+	return fmt.Sprintf(format, CommentPrefix, url)
 }
 
 // DownloadFile will download a url to a local file. It's efficient because it will
