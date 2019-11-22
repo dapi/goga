@@ -9,7 +9,6 @@ env:
 before_install: 
   - go get -u github.com/kyoh86/richgo
   - go get github.com/mitchellh/gox
-  - gox -build-toolchain
   - go get github.com/tcnksm/ghr
 
 script:
@@ -20,4 +19,4 @@ before_install: go get -u github.com/kyoh86/richgo
 
 after_success:
   - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
-  - ghr --username tcnksm-sample --token $GITHUB_TOKEN --replace --prerelease --debug pre-release dist/
+  - ghr --username dapi --token $GITHUB_TOKEN --replace --prerelease --debug pre-release dist/
