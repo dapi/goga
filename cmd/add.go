@@ -92,12 +92,15 @@ var addCmd = &cobra.Command{
 		original_url := args[0]
 		url := replaceGithubDirectLink(original_url)
 		filename := filepath.Base(url)
-		directory := filepath.Clean(args[1])
 
-		if DirectoryExists(directory) {
-			filename = directory + "/" + filename
-		} else {
-			filename = directory
+		if len(args) > 1 {
+			directory := filepath.Clean(args[1])
+
+			if DirectoryExists(directory) {
+				filename = directory + "/" + filename
+			} else {
+				filename = directory
+			}
 		}
 		fmt.Println("Fetch " + url + " into " + filename)
 
