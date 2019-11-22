@@ -45,9 +45,9 @@ var Formats = map[string]string{
 	".html":  "<!-- %s %s -->",
 }
 
-// formatsCmd represents the formats command
-var formatsCmd = &cobra.Command{
-	Use:   "formats",
+// syntaxCmd represents the formats command
+var syntaxCmd = &cobra.Command{
+	Use:   "syntax",
 	Short: "Pring list of available file extensions and comments syntax",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("List of available file extensions and its comments syntax:\n")
@@ -58,5 +58,5 @@ var formatsCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(formatsCmd)
+	rootCmd.AddCommand(syntaxCmd)
 }
