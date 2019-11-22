@@ -10,10 +10,11 @@ before_install:
   - go get -u github.com/kyoh86/richgo
   - go get github.com/mitchellh/gox
   - go get github.com/tcnksm/ghr
+  - go mod download
 
 script:
-  - go build
   - richgo test -v ./...
+  - go build
 
 after_success:
   - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
