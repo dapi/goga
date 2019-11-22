@@ -16,8 +16,8 @@ limitations under the License.
 package cmd
 
 import (
+	"bufio"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -26,9 +26,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func GenerateMagicComment(url string, ext string) string {
+	extenstions := map[string]string{
+		".js": "// ",
+		".go": "// ",
+		".rb": "# ",
+	}
+	prefix := extenstions[ext]
+	if len(prefix) == 0 {
+		panic(fmt.Sprintf("I don't known how to add comments for this extension - '%s'", ext))
+	}
+	return prefix + "goga " + url
+}
+
 // DownloadFile will download a url to a local file. It's efficient because it will
 // write as it downloads and not load the whole file into memory.
-func DownloadFile(filepath string, url string) error {
+func DownloadFile(filename string, url string, original_url string) error {
 
 	// Get the data
 	resp, err := http.Get(url)
@@ -38,14 +51,28 @@ func DownloadFile(filepath string, url string) error {
 	defer resp.Body.Close()
 
 	// Create the file
-	out, err := os.Create(filepath)
+	out, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
 	defer out.Close()
 
+	ext := filepath.Ext(filename)
+	line := 0
+	scanner := bufio.NewScanner(resp.Body)
+	for scanner.Scan() {
+		if line == 0 {
+			out.WriteString(GenerateMagicComment(original_url, ext))
+		}
+		out.WriteString("\n" + scanner.Text())
+		line += 1
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintln(os.Stderr, "reading standard input:", err)
+	}
+
 	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
+	//_, err = io.Copy(out, resp.Body)
 	return err
 }
 
@@ -62,11 +89,12 @@ var addCmd = &cobra.Command{
 	Long:  `Fetch goga-module from Source URL and put it as file into current directory.`,
 	Args:  cobra.RangeArgs(1, 1),
 	Run: func(cmd *cobra.Command, args []string) {
-		url := replaceGithubDirectLink(args[0])
+		original_url := args[0]
+		url := replaceGithubDirectLink(original_url)
 		filename := filepath.Base(url)
 		fmt.Println("Fetch " + url + " into ./" + filename)
 
-		if err := DownloadFile(filename, url); err != nil {
+		if err := DownloadFile(filename, url, original_url); err != nil {
 			panic(err)
 		}
 	},
