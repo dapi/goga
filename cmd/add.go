@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
+  "regexp"
 
 	"github.com/spf13/cobra"
 )
@@ -48,6 +49,12 @@ func DownloadFile(filepath string, url string) error {
     return err
 }
 
+func replaceGithubDirectLink(url string) string {
+	var re = regexp.MustCompile(`^(https://github.com/)([^/]+/[^/]+/)blob/(.+)$`)
+  s := re.ReplaceAllString(url, `https://raw.githubusercontent.com/$2$3`)
+  return s
+}
+
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add [Source URL]", // [Destination PATH]",
@@ -55,16 +62,13 @@ var addCmd = &cobra.Command{
 	Long: `Fetch goga-module from Source URL and put it as file into current directory.`,
   Args: cobra.RangeArgs(1,1),
 	Run: func(cmd *cobra.Command, args []string) {
-		url := args[0]
+		url := replaceGithubDirectLink( args[0] )
 		filename := filepath.Base(url)
 		fmt.Println("Fetch " + url + " into ./" + filename)
 
     if err := DownloadFile(filename, url); err != nil {
         panic(err)
     }
-
-    // https://github.com/dapi/elements/blob/master/spinner.js
-    // https://raw.githubusercontent.com/dapi/elements/master/spinner.js
 	},
 }
 
