@@ -1,3 +1,3 @@
 goga:
-	go build ./main.go && mv main goga
+	go build ./goga.go
 all: goga
