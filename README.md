@@ -23,26 +23,18 @@
 
 ### Добавление модуля в проект
 
-1. Найдите ссылку на нужный вам модуль - https://dapi.github.com/goga
+1. Найдите ссылку на нужный вам модуль в публичном каталоге модулей https://dapi.github.com/goga или по известной только вам приватной ссылке.
 
-2. Добавьте его в проект под нужным
+2. Добавьте модуль в проек
 
-Например так добавляется модуль `https://github.com/dapi/elements/blob/master/spinner.js` в файл `./app/javascripts/spinner.js`
-
-> goga add https://github.com/dapi/elements/blob/master/spinner.js ./app/javascripts/spinner.js
-
-можно упустить `add` и имя конечного файла:
-
-> goga https://github.com/dapi/elements/blob/master/spinner.js ./app/javascripts/
-
-`goga` скопирует файл как есть и добавит первой строкой специальный комментарий с адресом источника, например:
-
-`// goga https://github.com/dapi/elements/blob/master/spinner/index.js`
-
-Не удаляйте эту строку.
+> goga add https://github.com/dapi/elements/blob/master/spinner.js ./app/javascripts/
 
 ### Публикация изменений
 
 > goga push ./app/javascripts/spinner.js
 
 `goga` находит первую строку комментария с текстом `gogа`, берет из нее ссылку и пытается под вашими доступами запушать туда изменения.
+
+## Как устроены goga-модули
+
+`goga`-модуль это обычный исходник на любом языке программирования, в который, при установке, первой строкой добавляется адрес источника вида: `// goga https://...`
