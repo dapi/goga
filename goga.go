@@ -15,8 +15,7 @@ limitations under the License.
 */
 package main
 
-// import "github.com/dapi/goga/cmd"
-import "./cmd"
+import "github.com/dapi/goga/cmd"
 
 func main() {
   cmd.Execute()
