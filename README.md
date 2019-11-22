@@ -52,3 +52,5 @@
 
 customElements.define('dapi-spinner', class extends HTMLElement {} )
 ```
+
+Вам не нужно добавлять это комментарий самостоятельно. `goga` сам добавит его при подключении модуля.
