@@ -50,7 +50,7 @@ var syntaxCmd = &cobra.Command{
 	Use:   "syntax",
 	Short: "Pring list of available file extensions and comments syntax",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("List of available file extensions and its comments syntax:\n")
+		fmt.Println("List of available file extensions and its comments syntax:")
 		for extension, format := range Formats {
 			fmt.Printf(extension+"\t"+format+"\n", CommentPrefix, "URI")
 		}
