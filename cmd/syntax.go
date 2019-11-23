@@ -30,11 +30,13 @@ import (
 var CommentPrefix = "goga"
 var Formats = map[string]string{
 	".c":     "// %s %s",
+	".cs":    "// %s %s",
 	".js":    "// %s %s",
 	".go":    "// %s %s",
 	".java":  "// %s %s",
 	".php":   "// %s %s",
 	".slim":  "// %s %s",
+	".sh":    "# %s %s",
 	".haml":  "// %s %s",
 	".rb":    "# %s %s",
 	".py":    "# %s %s",
