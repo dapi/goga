@@ -73,8 +73,7 @@ func DownloadFile(filename string, url string, original_url string) error {
 
 func replaceGithubDirectLink(url string) string {
 	var re = regexp.MustCompile(`^(https://github.com/)([^/]+/[^/]+/)blob/(.+)$`)
-	s := re.ReplaceAllString(url, `https://raw.githubusercontent.com/$2$3`)
-	return s
+	return re.ReplaceAllString(url, `https://raw.githubusercontent.com/$2$3`)
 }
 
 func DirectoryExists(path string) bool {
