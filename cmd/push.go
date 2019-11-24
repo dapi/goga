@@ -24,8 +24,12 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"regexp"
 
 	"github.com/spf13/cobra"
@@ -47,7 +51,7 @@ func ReadFirstLine(filename string) string {
 }
 
 func FetchUrlFromComment(comment string) string {
-	var re = regexp.MustCompile(`[^ ]+\s+goga\s+([^# ]+)$`)
+	re := regexp.MustCompile(`[^ ]+\s+goga\s+([^# ]+)$`)
 	return re.ReplaceAllString(comment, `$1`)
 }
 
@@ -65,10 +69,89 @@ var pushCmd = &cobra.Command{
 		file := args[0]
 		firstLint := ReadFirstLine(file)
 		url := FetchUrlFromComment(firstLint)
-		fmt.Println("push called", url)
+		PushFileToRemoteRepository(file, url)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(pushCmd)
+}
+
+// Copy the src file to dst. Any existing file will be overwritten and will not
+// copy file attributes.
+func Copy(src, dst string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, in)
+	if err != nil {
+		return err
+	}
+	return out.Close()
+}
+
+func GetSubdirectoryFromUrl(url string) string {
+	re := regexp.MustCompile(`^https://github.com/[^\/]+/[^\/]+/blob/([^\/]+)/(.+)\n?$`)
+	// $1 - branch
+	return re.ReplaceAllString(url, `$2`)
+}
+
+func PushFileToRemoteRepository(file string, url string) error {
+	tempDir, err := ioutil.TempDir("", "goga")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer os.RemoveAll(tempDir)
+	log.Print("Use temporary directory ", tempDir)
+
+	// filename := filepath.Base(file)
+	destination_file := GetSubdirectoryFromUrl(url)
+	dest := filepath.Clean(tempDir + "/" + destination_file)
+
+	// TODO Get repo from url
+	var repo = "git@github.com:dapi/elements.git"
+
+	cmd := exec.Command("git", "clone", repo, tempDir)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	destination_file_path := tempDir + "/" + destination_file
+	log.Print("Copy ", file, " to ", dest, " as ", destination_file)
+
+	// TODO Remove magic-comment
+	Copy(file, destination_file_path)
+
+	commitMessage := fmt.Sprintf("Update %s by goga", destination_file)
+	cmd = exec.Command("git", "commit", "-m", commitMessage, destination_file_path)
+	cmd.Dir = tempDir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cmd = exec.Command("git", "push")
+	cmd.Dir = tempDir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return err
 }
