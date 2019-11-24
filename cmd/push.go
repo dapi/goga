@@ -109,6 +109,11 @@ func GetSubdirectoryFromUrl(url string) string {
 	return re.ReplaceAllString(url, `$2`)
 }
 
+func GetRepoFromUrl(url string) string {
+	re := regexp.MustCompile(`^https://github.com/([^\/]+/[^\/]+)/blob/([^\/]+)/(.+)\n?$`)
+	return re.ReplaceAllString(url, `git@github.com:$1.git`)
+}
+
 func PushFileToRemoteRepository(file string, url string) error {
 	tempDir, err := ioutil.TempDir("", "goga")
 	if err != nil {
@@ -121,7 +126,7 @@ func PushFileToRemoteRepository(file string, url string) error {
 	dest := filepath.Clean(tempDir + "/" + destination_file)
 
 	// TODO Get repo from url
-	var repo = "git@github.com:dapi/elements.git"
+	var repo = GetRepoFromUrl(url)
 
 	cmd := exec.Command("git", "clone", repo, tempDir)
 	cmd.Stdout = os.Stdout
