@@ -24,7 +24,7 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"io"
+	//	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -79,7 +79,7 @@ func init() {
 
 // Copy the src file to dst. Any existing file will be overwritten and will not
 // copy file attributes.
-func Copy(src, dst string) error {
+func CopyRemovingMagicComment(src, dst string) error {
 	in, err := os.Open(src)
 	if err != nil {
 		return err
@@ -92,9 +92,13 @@ func Copy(src, dst string) error {
 	}
 	defer out.Close()
 
-	_, err = io.Copy(out, in)
-	if err != nil {
-		return err
+	line := 0
+	scanner := bufio.NewScanner(in)
+	for scanner.Scan() {
+		if line > 0 {
+			out.WriteString(scanner.Text() + "\n")
+		}
+		line += 1
 	}
 	return out.Close()
 }
@@ -113,7 +117,6 @@ func PushFileToRemoteRepository(file string, url string) error {
 	defer os.RemoveAll(tempDir)
 	log.Print("Use temporary directory ", tempDir)
 
-	// filename := filepath.Base(file)
 	destination_file := GetSubdirectoryFromUrl(url)
 	dest := filepath.Clean(tempDir + "/" + destination_file)
 
@@ -132,7 +135,7 @@ func PushFileToRemoteRepository(file string, url string) error {
 	log.Print("Copy ", file, " to ", dest, " as ", destination_file)
 
 	// TODO Remove magic-comment
-	Copy(file, destination_file_path)
+	CopyRemovingMagicComment(file, destination_file_path)
 
 	commitMessage := fmt.Sprintf("Update %s by goga", destination_file)
 	cmd = exec.Command("git", "commit", "-m", commitMessage, destination_file_path)
