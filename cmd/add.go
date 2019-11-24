@@ -37,7 +37,6 @@ func GenerateMagicComment(url string, ext string) string {
 // DownloadFile will download a url to a local file. It's efficient because it will
 // write as it downloads and not load the whole file into memory.
 func DownloadFile(filename string, url string, original_url string) error {
-
 	// Get the data
 	resp, err := http.Get(url)
 	if err != nil {
@@ -65,9 +64,6 @@ func DownloadFile(filename string, url string, original_url string) error {
 	if err := scanner.Err(); err != nil {
 		fmt.Fprintln(os.Stderr, "reading standard input:", err)
 	}
-
-	// Write the body to file
-	//_, err = io.Copy(out, resp.Body)
 	return err
 }
 
