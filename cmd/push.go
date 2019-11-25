@@ -29,10 +29,11 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
+	// "path/filepath"
 	"regexp"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/src-d/go-git.v4"
 )
 
 func ReadFirstLine(filename string) string {
@@ -120,46 +121,62 @@ func PushFileToRemoteRepository(file string, url string) error {
 		log.Fatal(err)
 	}
 	defer os.RemoveAll(tempDir)
-	log.Print("Use temporary directory ", tempDir)
+	// log.Print("Use temporary directory ", tempDir)
 
 	destination_file := GetSubdirectoryFromUrl(url)
-	dest := filepath.Clean(tempDir + "/" + destination_file)
+	// dest := filepath.Clean(tempDir + "/" + destination_file)
+	fmt.Print("Checking ", file)
 
 	// TODO Get repo from url
 	var repo = GetRepoFromUrl(url)
 
+	fmt.Print(" to ", repo+"/"+destination_file)
 	cmd := exec.Command("git", "clone", repo, tempDir)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	//cmd.Stdout = os.Stdout
+	//cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	fmt.Print(" ")
 	destination_file_path := tempDir + "/" + destination_file
-	log.Print("Copy ", file, " to ", dest, " as ", destination_file)
+	//log.Print("Copy ", file, " to ", dest, " as ", destination_file)
 
 	// TODO Remove magic-comment
 	CopyRemovingMagicComment(file, destination_file_path)
 
-	commitMessage := fmt.Sprintf("Update %s by goga", destination_file)
-	cmd = exec.Command("git", "commit", "-m", commitMessage, destination_file_path)
-	cmd.Dir = tempDir
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err = cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
+	r, err := git.PlainOpen(tempDir)
+	CheckIfError(err)
+	w, err := r.Worktree()
+	CheckIfError(err)
+	status, err := w.Status()
+	CheckIfError(err)
 
-	cmd = exec.Command("git", "push")
-	cmd.Dir = tempDir
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err = cmd.Run()
-	if err != nil {
-		log.Fatal(err)
+	if len(status) == 0 {
+		fmt.Println("nothing changed, skip")
+	} else {
+		CommintAndPush(tempDir, destination_file, destination_file_path)
 	}
 
 	return err
+}
+
+func CommintAndPush(tempDir string, destination_file string, destination_file_path string) {
+	commitMessage := fmt.Sprintf("Update %s by goga", destination_file)
+	cmd := exec.Command("git", "commit", "-m", commitMessage, destination_file_path)
+	cmd.Dir = tempDir
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Print("pushing.. ")
+
+	r, err := git.PlainOpen(tempDir)
+	CheckIfError(err)
+	err = r.Push(&git.PushOptions{})
+	CheckIfError(err)
+	fmt.Println("done.")
+	return
 }
