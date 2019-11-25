@@ -29,8 +29,9 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "goga",
-	Short: "Single file Package Manager for every program languages.",
-	Long: `Single file Package Manager for every program languages.
+	Short: "Single file Package Manager for every program languages. Version " + Version,
+	Long: "Single file Package Manager for every program languages. Version " + Version +
+		`
 	
 Add single file as module into the project and publicate its
 modification with one command. For example, fetch and add file:
