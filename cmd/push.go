@@ -24,16 +24,17 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	//	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
-	// "path/filepath"
 	"regexp"
+	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/tcnksm/go-gitconfig"
 	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
 func ReadFirstLine(filename string) string {
@@ -163,18 +164,34 @@ func PushFileToRemoteRepository(file string, url string) error {
 }
 
 func CommintAndPush(tempDir string, destination_file string, destination_file_path string) {
+	username, err := gitconfig.Username()
+	email, err := gitconfig.Email()
 	commitMessage := fmt.Sprintf("Update %s by goga", destination_file)
-	cmd := exec.Command("git", "commit", "-m", commitMessage, destination_file_path)
-	cmd.Dir = tempDir
-	err := cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Print("pushing.. ")
 
 	r, err := git.PlainOpen(tempDir)
 	CheckIfError(err)
+
+	w, err := r.Worktree()
+	CheckIfError(err)
+
+	_, err = w.Add(destination_file)
+	CheckIfError(err)
+
+	commit, err := w.Commit(commitMessage, &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  username,
+			Email: email,
+			When:  time.Now(),
+		},
+	})
+	CheckIfError(err)
+
+	fmt.Print("commit, ")
+	_, err = r.CommitObject(commit)
+	CheckIfError(err)
+
+	fmt.Print("pushing.. ")
+
 	err = r.Push(&git.PushOptions{})
 	CheckIfError(err)
 	fmt.Println("done.")

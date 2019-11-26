@@ -13,6 +13,7 @@ require (
 	github.com/spf13/viper v1.5.0
 	github.com/stretchr/testify v1.3.0
 	github.com/tcnksm/ghr v0.13.0 // indirect
+	github.com/tcnksm/go-gitconfig v0.1.2
 	github.com/wacul/ptr v1.0.0 // indirect
 	golang.org/x/sys v0.0.0-20191120155948-bd437916bb0e // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1
