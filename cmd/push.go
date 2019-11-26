@@ -27,7 +27,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"regexp"
 	"time"
 
@@ -118,61 +117,45 @@ func GetRepoFromUrl(url string) string {
 
 func PushFileToRemoteRepository(file string, url string) error {
 	tempDir, err := ioutil.TempDir("", "goga")
-	if err != nil {
-		log.Fatal(err)
-	}
+	CheckIfError(err)
 	defer os.RemoveAll(tempDir)
-	// log.Print("Use temporary directory ", tempDir)
 
 	destination_file := GetSubdirectoryFromUrl(url)
-	// dest := filepath.Clean(tempDir + "/" + destination_file)
 	fmt.Print("Checking ", file)
 
 	// TODO Get repo from url
 	var repo = GetRepoFromUrl(url)
 
 	fmt.Print(" to ", repo+"/"+destination_file)
-	cmd := exec.Command("git", "clone", repo, tempDir)
-	//cmd.Stdout = os.Stdout
-	//cmd.Stderr = os.Stderr
-	err = cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
+
+	r, err := git.PlainClone(tempDir, false, &git.CloneOptions{URL: repo})
+	CheckIfError(err)
 
 	fmt.Print(" ")
 	destination_file_path := tempDir + "/" + destination_file
-	//log.Print("Copy ", file, " to ", dest, " as ", destination_file)
 
 	// TODO Remove magic-comment
 	CopyRemovingMagicComment(file, destination_file_path)
 
-	r, err := git.PlainOpen(tempDir)
-	CheckIfError(err)
 	w, err := r.Worktree()
 	CheckIfError(err)
+
 	status, err := w.Status()
 	CheckIfError(err)
 
 	if len(status) == 0 {
 		fmt.Println("nothing changed, skip")
 	} else {
-		CommintAndPush(tempDir, destination_file, destination_file_path)
+		CommintAndPush(r, w, tempDir, destination_file, destination_file_path)
 	}
 
 	return err
 }
 
-func CommintAndPush(tempDir string, destination_file string, destination_file_path string) {
+func CommintAndPush(r *git.Repository, w *git.Worktree, tempDir string, destination_file string, destination_file_path string) {
 	username, err := gitconfig.Username()
 	email, err := gitconfig.Email()
 	commitMessage := fmt.Sprintf("Update %s by goga", destination_file)
-
-	r, err := git.PlainOpen(tempDir)
-	CheckIfError(err)
-
-	w, err := r.Worktree()
-	CheckIfError(err)
 
 	_, err = w.Add(destination_file)
 	CheckIfError(err)
