@@ -22,12 +22,9 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
-	"regexp"
 	"time"
 
 	"github.com/spf13/cobra"

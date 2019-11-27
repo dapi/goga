@@ -1,5 +1,12 @@
 package cmd
 
+import (
+	"bufio"
+	"log"
+	"os"
+	"regexp"
+)
+
 // Copy the src file to dst. Any existing file will be overwritten and will not
 // copy file attributes.
 func CopyRemovingMagicComment(src, dst string) error {

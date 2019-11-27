@@ -23,43 +23,57 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
-	"github.com/sergi/go-diff/diffmatchpatch"
+	"github.com/SpectraLogic/go-gitignore"
 	"github.com/spf13/cobra"
 )
 
-// diffCmd represents the diff command
-var diffCmd = &cobra.Command{
-	Use:   "diff <file>",
-	Short: "Show changes between local file and its goga-source",
-	Long: `Show changes between local file and its goga-source. For example:
+func FilePathWalkDir(root string) ([]string, error) {
+	gi, err := gitignore.NewGitIgnore("./.gitignore")
+	CheckIfError(err)
+	var files []string
+	err = filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() && (info.Name() == ".git" || (info.Name()[0] == '.' && len(info.Name()) > 1)) {
+			return filepath.SkipDir
+		}
+		if !info.IsDir() && !gi.Match(path, false) {
+			files = append(files, path)
+		}
+		return nil
+	})
+	return files, err
+}
 
-# Show diffs of spinner.js
-> goga ./spinner.js
-`,
-	Args: cobra.RangeArgs(1, 1),
+// statusCmd represents the status command
+var statusCmd = &cobra.Command{
+	Use:   "status",
+	Short: "Scan every file in subdirectory and show its status",
+	Long: `
+
+> goga status`,
 	Run: func(cmd *cobra.Command, args []string) {
-		file := args[0]
-		firstLint := ReadFirstLine(file)
-		url := FetchUrlFromComment(firstLint)
-		dmp := diffmatchpatch.New()
-
-		diffs := dmp.DiffMain(file, url, false)
-		fmt.Println(dmp.DiffPrettyText(diffs))
-		fmt.Println(url)
+		fmt.Print("Scanning.. ")
+		files, err := FilePathWalkDir(".")
+		CheckIfError(err)
+		fmt.Println(len(files), "files found")
+		for _, file := range files {
+			fmt.Println(file)
+		}
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(diffCmd)
+	rootCmd.AddCommand(statusCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// diffCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// statusCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// diffCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// statusCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

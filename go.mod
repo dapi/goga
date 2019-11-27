@@ -3,11 +3,14 @@ module github.com/dapi/goga
 go 1.13
 
 require (
+	github.com/SpectraLogic/go-gitignore v0.0.0-20190718184322-575ed1ff6d56
+	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/kyoh86/richgo v0.3.3 // indirect
 	github.com/kyoh86/xdg v1.0.0 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/gox v1.0.1 // indirect
+	github.com/monochromegane/go-gitignore v0.0.0-20160105113617-38717d0a108c
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/sergi/go-diff v1.0.0
 	github.com/spf13/cobra v0.0.5
