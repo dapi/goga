@@ -30,6 +30,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Minimal possible file size
+const MIN_FILE_SIZE = int64(len("/ goga http://ya.ru/1.js"))
+
 func FilePathWalkDir(root string) ([]string, error) {
 	gi, err := gitignore.NewGitIgnore("./.gitignore")
 	CheckIfError(err)
@@ -41,7 +44,12 @@ func FilePathWalkDir(root string) ([]string, error) {
 		if !info.IsDir() && !gi.Match(path, false) {
 			extension := filepath.Ext(path)
 			if _, ok := Formats[extension]; ok {
-				files = append(files, path)
+				fi, err := os.Stat(path)
+				CheckIfError(err)
+				size := fi.Size()
+				if size >= MIN_FILE_SIZE {
+					files = append(files, path)
+				}
 			}
 		}
 		return nil
