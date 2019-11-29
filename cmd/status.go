@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/SpectraLogic/go-gitignore"
 	"github.com/spf13/cobra"
@@ -48,7 +49,10 @@ func FilePathWalkDir(root string) ([]string, error) {
 				CheckIfError(err)
 				size := fi.Size()
 				if size >= MIN_FILE_SIZE {
-					files = append(files, path)
+					firstLint := ReadFirstLine(path)
+					if strings.Contains(firstLint, " goga ") {
+						files = append(files, path)
+					}
 				}
 			}
 		}
@@ -68,7 +72,7 @@ var statusCmd = &cobra.Command{
 		fmt.Print("Scanning.. ")
 		files, err := FilePathWalkDir(".")
 		CheckIfError(err)
-		fmt.Println(len(files), "files found")
+		fmt.Println(len(files), "goga-files found")
 		for _, file := range files {
 			fmt.Println(file)
 		}
