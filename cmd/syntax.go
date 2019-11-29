@@ -27,7 +27,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var CommentPrefix = "goga"
+const CommentPrefix = "goga"
+
 var Formats = map[string]string{
 	".c":     "// %s %s",
 	".cs":    "// %s %s",
@@ -45,6 +46,19 @@ var Formats = map[string]string{
 	".swift": "-- %s %s",
 	".xml":   "<!-- %s %s -->",
 	".html":  "<!-- %s %s -->",
+}
+
+var Extensions = GetExtensionsFromSyntax(Formats)
+
+func GetExtensionsFromSyntax(formats map[string]string) []string {
+	keys := make([]string, len(formats))
+
+	i := 0
+	for k := range formats {
+		keys[i] = k
+		i++
+	}
+	return keys
 }
 
 // syntaxCmd represents the formats command
