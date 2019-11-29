@@ -39,7 +39,10 @@ func FilePathWalkDir(root string) ([]string, error) {
 			return filepath.SkipDir
 		}
 		if !info.IsDir() && !gi.Match(path, false) {
-			files = append(files, path)
+			extension := filepath.Ext(path)
+			if _, ok := Formats[extension]; ok {
+				files = append(files, path)
+			}
 		}
 		return nil
 	})
