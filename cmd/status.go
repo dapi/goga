@@ -66,7 +66,7 @@ func FilePathWalkDir(root string) error {
 	return err
 }
 
-func DiffFileToSource(file string) []diffmatchpatch.Diff {
+func DiffFileToSource(file string) (*diffmatchpatch.DiffMatchPatch, []diffmatchpatch.Diff) {
 	firstLint := ReadFirstLine(file)
 	url := FetchUrlFromComment(firstLint)
 
@@ -75,14 +75,12 @@ func DiffFileToSource(file string) []diffmatchpatch.Diff {
 	defer os.RemoveAll(tempDir)
 
 	destination_file := GetSubdirectoryFromUrl(url)
-	fmt.Print("Found ", file, " checking")
 
 	var repo = GetRepoFromUrl(url)
 
 	_, err = git.PlainClone(tempDir, false, &git.CloneOptions{URL: repo})
 	CheckIfError(err)
 
-	fmt.Print(" ")
 	destination_file_path := tempDir + "/" + destination_file
 
 	tmpfile_local, err := ioutil.TempFile("", "goga.local")
@@ -105,16 +103,17 @@ func DiffFileToSource(file string) []diffmatchpatch.Diff {
 
 	dmp := diffmatchpatch.New()
 
-	return dmp.DiffMain(text_local, text_remote, false)
+	return dmp, dmp.DiffMain(text_local, text_remote, false)
 }
 
 func CheckFileStatus(file string) {
-	diffs := DiffFileToSource(file)
+	fmt.Print("Found ", file, " checking")
+	_, diffs := DiffFileToSource(file)
 	diffsCount := DiffsCount(diffs)
 	if diffsCount > 0 {
-		fmt.Println("-", diffsCount, "diffs found")
+		fmt.Println(" -", diffsCount, "diffs found")
 	} else {
-		fmt.Println("- no changes")
+		fmt.Println(" - no changes")
 	}
 }
 

@@ -37,7 +37,11 @@ var diffCmd = &cobra.Command{
 `,
 	Args: cobra.RangeArgs(1, 1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("diff called")
+		dmp, diffs := DiffFileToSource(args[0])
+		diffsCount := DiffsCount(diffs)
+		if diffsCount > 0 {
+			fmt.Println(dmp.DiffPrettyText(diffs))
+		}
 	},
 }
 
