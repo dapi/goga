@@ -23,18 +23,21 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/SpectraLogic/go-gitignore"
+	"github.com/sergi/go-diff/diffmatchpatch"
 	"github.com/spf13/cobra"
+	"gopkg.in/src-d/go-git.v4"
 )
 
 // Minimal possible file size
 const MIN_FILE_SIZE = int64(len("/ goga http://ya.ru/1.js"))
 
-func FilePathWalkDir(root string) ([]string, error) {
+func FilePathWalkDir(root string) error {
 	gi, err := gitignore.NewGitIgnore("./.gitignore")
 	CheckIfError(err)
 	var files []string
@@ -51,6 +54,8 @@ func FilePathWalkDir(root string) ([]string, error) {
 				if size >= MIN_FILE_SIZE {
 					firstLint := ReadFirstLine(path)
 					if strings.Contains(firstLint, " goga ") {
+						CheckFileStatus(path)
+
 						files = append(files, path)
 					}
 				}
@@ -58,24 +63,74 @@ func FilePathWalkDir(root string) ([]string, error) {
 		}
 		return nil
 	})
-	return files, err
+	return err
+}
+
+func CheckFileStatus(file string) {
+	firstLint := ReadFirstLine(file)
+	url := FetchUrlFromComment(firstLint)
+
+	tempDir, err := ioutil.TempDir("", "goga")
+	CheckIfError(err)
+	defer os.RemoveAll(tempDir)
+
+	destination_file := GetSubdirectoryFromUrl(url)
+	fmt.Print("Found ", file, " checking")
+
+	var repo = GetRepoFromUrl(url)
+
+	_, err = git.PlainClone(tempDir, false, &git.CloneOptions{URL: repo})
+	CheckIfError(err)
+
+	fmt.Print(" ")
+	destination_file_path := tempDir + "/" + destination_file
+
+	tmpfile_local, err := ioutil.TempFile("", "goga.local")
+	//fmt.Println(tmpfile_local.Name())
+	defer os.Remove(tmpfile_local.Name())
+
+	tmpfile_remote, err := ioutil.TempFile("", "goga.remote")
+	//fmt.Println(tmpfile_remote.Name())
+	defer os.Remove(tmpfile_remote.Name())
+
+	CopyWithoutMagicComment(file, tmpfile_local.Name())
+	CopyWithoutMagicComment(destination_file_path, tmpfile_remote.Name())
+
+	content_local, err := ioutil.ReadFile(tmpfile_local.Name())
+	CheckIfError(err)
+
+	content_remote, err := ioutil.ReadFile(tmpfile_remote.Name())
+	CheckIfError(err)
+
+	text_local := string(content_local)
+	text_remote := string(content_remote)
+
+	dmp := diffmatchpatch.New()
+
+	diffs := dmp.DiffMain(text_local, text_remote, false)
+
+	fmt.Println("-", len(diffs), "diffs found")
 }
 
 // statusCmd represents the status command
 var statusCmd = &cobra.Command{
-	Use:   "status",
-	Short: "Scan every file in subdirectory and show its status",
-	Long: `
+	Use:   "status <dir to scan>",
+	Short: "Scan every file in subdirectories of specified directory and show its status",
+	Long: `Scan every file in subdirectories of specified directory and show its status. 
+Uses current directory if no arguments specified. For example:
 
 > goga status`,
+	Args: cobra.RangeArgs(0, 1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Print("Scanning.. ")
-		files, err := FilePathWalkDir(".")
-		CheckIfError(err)
-		fmt.Println(len(files), "goga-files found")
-		for _, file := range files {
-			fmt.Println(file)
+		var dir string
+		if len(args) == 0 {
+			dir = "."
+		} else {
+			dir = args[0]
 		}
+		fmt.Println("Scanning directory:", dir)
+		err := FilePathWalkDir(dir)
+		CheckIfError(err)
 	},
 }
 

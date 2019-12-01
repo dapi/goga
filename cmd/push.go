@@ -75,7 +75,7 @@ func PushFileToRemoteRepository(file string, url string) error {
 	destination_file_path := tempDir + "/" + destination_file
 
 	// TODO Remove magic-comment
-	CopyRemovingMagicComment(file, destination_file_path)
+	CopyWithoutMagicComment(file, destination_file_path)
 
 	w, err := r.Worktree()
 	CheckIfError(err)
