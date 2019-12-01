@@ -24,29 +24,20 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/sergi/go-diff/diffmatchpatch"
 	"github.com/spf13/cobra"
 )
 
 // diffCmd represents the diff command
 var diffCmd = &cobra.Command{
-	Use:   "diff <file>",
-	Short: "Show changes between local file and its goga-source",
-	Long: `Show changes between local file and its goga-source. For example:
+	Use:   "diff",
+	Short: "Compare file to its source line by line",
+	Long: `Compare specified file to its source line by line. For example:
 
-# Show diffs of spinner.js
-> goga ./spinner.js
+> goga diff ./spinner.js
 `,
 	Args: cobra.RangeArgs(1, 1),
 	Run: func(cmd *cobra.Command, args []string) {
-		file := args[0]
-		firstLint := ReadFirstLine(file)
-		url := FetchUrlFromComment(firstLint)
-		dmp := diffmatchpatch.New()
-
-		diffs := dmp.DiffMain(file, url, false)
-		fmt.Println(dmp.DiffPrettyText(diffs))
-		fmt.Println(url)
+		fmt.Println("diff called")
 	},
 }
 

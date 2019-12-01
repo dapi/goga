@@ -66,7 +66,7 @@ func FilePathWalkDir(root string) error {
 	return err
 }
 
-func CheckFileStatus(file string) {
+func DiffFileToSource(file string) []diffmatchpatch.Diff {
 	firstLint := ReadFirstLine(file)
 	url := FetchUrlFromComment(firstLint)
 
@@ -86,11 +86,9 @@ func CheckFileStatus(file string) {
 	destination_file_path := tempDir + "/" + destination_file
 
 	tmpfile_local, err := ioutil.TempFile("", "goga.local")
-	//fmt.Println(tmpfile_local.Name())
 	defer os.Remove(tmpfile_local.Name())
 
 	tmpfile_remote, err := ioutil.TempFile("", "goga.remote")
-	//fmt.Println(tmpfile_remote.Name())
 	defer os.Remove(tmpfile_remote.Name())
 
 	CopyWithoutMagicComment(file, tmpfile_local.Name())
@@ -107,8 +105,11 @@ func CheckFileStatus(file string) {
 
 	dmp := diffmatchpatch.New()
 
-	diffs := dmp.DiffMain(text_local, text_remote, false)
+	return dmp.DiffMain(text_local, text_remote, false)
+}
 
+func CheckFileStatus(file string) {
+	diffs := DiffFileToSource(file)
 	diffsCount := DiffsCount(diffs)
 	if diffsCount > 0 {
 		fmt.Println("-", diffsCount, "diffs found")
