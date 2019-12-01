@@ -109,7 +109,13 @@ func CheckFileStatus(file string) {
 
 	diffs := dmp.DiffMain(text_local, text_remote, false)
 
-	fmt.Println("-", len(diffs), "diffs found")
+	if len(diffs) > 1 {
+		fmt.Println("-", len(diffs)-1, "diffs found")
+		fmt.Println(dmp.DiffPrettyText(diffs))
+	} else {
+		fmt.Println("- no changes")
+	}
+
 }
 
 // statusCmd represents the status command
