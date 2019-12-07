@@ -40,19 +40,9 @@
 
 ## Использование
 
-Если кратко, то:
+Список всех команд:
 
 > goga
-
-Гога расскажет какие у него есть команди и опции.
-
-## Магический комментарий
-
-При скачивании модуля через `goga` он автоматически добавляет первой строкой магичекий комментарий со ссылкой на источник, например:
-
-```javascript
-// goga https://github.com/dapi/elements/blob/master/spinner.js
-```
 
 ### goga add <URL> [local destination]
 
@@ -110,6 +100,14 @@ List of available file extensions and its comments syntax:
 .java   // goga URI
 .slim   // goga URI
 .rb     # goga URI
+```
+
+## Магический комментарий
+
+При скачивании модуля через `goga` он автоматически добавляет первой строкой магичекий комментарий со ссылкой на источник, например:
+
+```javascript
+// goga https://github.com/dapi/elements/blob/master/spinner.js
 ```
 
 ## Планы
