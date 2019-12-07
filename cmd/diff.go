@@ -23,7 +23,6 @@ package cmd
 
 import (
 	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -40,7 +39,11 @@ var diffCmd = &cobra.Command{
 		dmp, diffs := DiffFileToSource(args[0])
 		diffsCount := DiffsCount(diffs)
 		if diffsCount > 0 {
-			fmt.Println(dmp.DiffPrettyText(diffs))
+			// Looks better but escapes new line characters
+			patch := dmp.PatchMake(diffs)
+			fmt.Println(dmp.PatchToText(patch))
+
+			// fmt.Println(dmp.DiffPrettyText(diffs))
 		}
 	},
 }
