@@ -35,7 +35,7 @@ import (
 
 // pushCmd represents the push command
 var pushCmd = &cobra.Command{
-	Use:   "push <file>",
+	Use:   "push FILE",
 	Short: "Push changes of goga-modules into source repository",
 	Long: `Push specified file into its repository. For example:
 

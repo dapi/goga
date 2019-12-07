@@ -28,7 +28,7 @@ import (
 
 // diffCmd represents the diff command
 var diffCmd = &cobra.Command{
-	Use:   "diff",
+	Use:   "diff FILE",
 	Short: "Compare file to its source line by line",
 	Long: `Compare specified file to its source line by line. For example:
 

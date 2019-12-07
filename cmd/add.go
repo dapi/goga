@@ -79,7 +79,7 @@ func DirectoryExists(path string) bool {
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:   "add <URL> [destination]", // [Destination PATH]",
+	Use:   "add URL [PATH]", // [Destination PATH]",
 	Short: "Fetch goga-module and put it into the project.",
 	Long:  `Fetch goga-module from source URL and put it as file into destination directory. It puts file as is into current directory if destination is not specified.`,
 	Args:  cobra.RangeArgs(1, 2),

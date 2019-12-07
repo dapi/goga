@@ -131,7 +131,7 @@ func DiffsCount(diffs []diffmatchpatch.Diff) int {
 
 // statusCmd represents the status command
 var statusCmd = &cobra.Command{
-	Use:   "status <dir to scan>",
+	Use:   "status [DIR]",
 	Short: "Scan every file in subdirectories of specified directory and show its status",
 	Long: `Scan every file in subdirectories of specified directory and show its status. 
 Uses current directory if no arguments specified. For example:
